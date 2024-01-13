@@ -2,13 +2,13 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-
+<div class="container">
 @if (User.Identity.IsAuthenticated)
 {
     <p>
         Authenticated!
     </p>
-    <table class="table table-bordered">
+    <table class="table table-striped">
         <tr>
             <th>Claim Type</th>
             <th>Value</th>
@@ -26,3 +26,4 @@
         }
     </table>
 }
+</div>
