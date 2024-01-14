@@ -24,15 +24,14 @@ steps:
     configuration: $(buildConfiguration)
   
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
   inputs:
-    command: 'test'
-    arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
-    publishTestResults: true
-    projects: 'MyTestLibrary' # update with your test project directory
-  
-- task: PublishCodeCoverageResults@1
-  displayName: 'Publish code coverage report'
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+
+# this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
+- task: PublishPipelineArtifact@1
   inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+    targetPath: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'myWebsiteName'
