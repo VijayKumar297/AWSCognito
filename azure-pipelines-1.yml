@@ -13,31 +13,26 @@ variables:
  
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET Core 6'
   inputs:
-    version: 6.0.x
- 
+    version: '6.x'
+    includePreviewVersions: true # Required for preview versions
+  
 - task: DotNetCoreCLI@2
-  displayName: Restore
+  displayName: 'dotnet build'
   inputs:
-    command: restore
-    projects: '*/.csproj'
- 
+    command: 'build'
+    configuration: $(buildConfiguration)
+  
 - task: DotNetCoreCLI@2
-  displayName: Build
+  displayName: 'dotnet test'
   inputs:
-    projects: '*/.csproj'
- 
-- task: DotNetCoreCLI@2
-  displayName: Publish
+    command: 'test'
+    arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
+    publishTestResults: true
+    projects: 'MyTestLibrary' # update with your test project directory
+  
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage report'
   inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '*/.csproj'
-    arguments: '--configuration release --output $(build.artifactstagingdirectory) /property:PublishWithAspNetCoreTargetManifest=false'
-    zipAfterPublish: false
- 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
-  inputs:
-    ArtifactName: myproject
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
